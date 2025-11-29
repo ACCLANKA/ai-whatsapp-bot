@@ -1,7 +1,6 @@
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
-const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const cors = require('cors');
 const path = require('path');
@@ -10,6 +9,23 @@ const session = require('express-session');
 const multer = require('multer');
 const fs = require('fs');
 require('dotenv').config();
+
+// Check if WhatsApp can be initialized (requires Puppeteer/Chrome)
+let WhatsAppClient = null;
+let LocalAuth = null;
+let WHATSAPP_ENABLED = false;
+
+try {
+  const wwjs = require('whatsapp-web.js');
+  WhatsAppClient = wwjs.Client;
+  LocalAuth = wwjs.LocalAuth;
+  WHATSAPP_ENABLED = process.env.DISABLE_WHATSAPP !== 'true';
+  console.log('✅ WhatsApp-web.js loaded successfully');
+} catch (err) {
+  console.log('⚠️ WhatsApp-web.js not available (Puppeteer/Chrome required)');
+  console.log('   Running in API-only mode - WhatsApp features disabled');
+  WHATSAPP_ENABLED = false;
+}
 
 // Ensure data directory exists
 const dataDir = path.join(__dirname, 'data');
@@ -525,7 +541,12 @@ let clientInfo = null;
 
 // Initialize WhatsApp Client
 function initializeClient() {
-  client = new Client({
+  if (!WHATSAPP_ENABLED || !WhatsAppClient) {
+    console.log('⚠️ WhatsApp client initialization skipped (not available or disabled)');
+    return;
+  }
+  
+  client = new WhatsAppClient({
     authStrategy: new LocalAuth({
       dataPath: './wa-session'
     }),
@@ -1214,6 +1235,20 @@ io.on('connection', (socket) => {
 // Get bot status
 app.get('/api/status', async (req, res) => {
   try {
+    // Check if WhatsApp is enabled
+    if (!WHATSAPP_ENABLED) {
+      return res.json({
+        success: true,
+        data: {
+          isReady: false,
+          hasQR: false,
+          clientInfo: null,
+          whatsappEnabled: false,
+          message: 'WhatsApp is disabled (API-only mode)'
+        }
+      });
+    }
+    
     // Verify actual client state if we think it's ready
     if (isReady && client) {
       try {
@@ -1239,7 +1274,8 @@ app.get('/api/status', async (req, res) => {
       data: {
         isReady,
         hasQR: !!qrCodeData,
-        clientInfo
+        clientInfo,
+        whatsappEnabled: WHATSAPP_ENABLED
       }
     });
   } catch (error) {
@@ -1248,7 +1284,8 @@ app.get('/api/status', async (req, res) => {
       data: {
         isReady: false,
         hasQR: false,
-        clientInfo: null
+        clientInfo: null,
+        whatsappEnabled: WHATSAPP_ENABLED
       }
     });
   }
@@ -2256,8 +2293,12 @@ server.on('error', (error) => {
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('Shutting down gracefully...');
-  if (client) {
-    await client.destroy();
+  if (client && WHATSAPP_ENABLED) {
+    try {
+      await client.destroy();
+    } catch (e) {
+      console.log('Error destroying client:', e.message);
+    }
   }
   db.close();
   process.exit(0);

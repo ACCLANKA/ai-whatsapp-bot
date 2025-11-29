@@ -9,7 +9,7 @@ services:
     source_dir: /
     environment_slug: node-js
     instance_count: 1
-    instance_size_slug: professional-xs
+    instance_size_slug: basic-xxs
     http_port: 3011
     routes:
       - path: /
@@ -18,16 +18,13 @@ services:
         value: "3011"
       - key: NODE_ENV
         value: "production"
-      - key: OLLAMA_HOST
-        value: "http://localhost:11434"
-        type: SECRET
-      - key: OLLAMA_MODEL
-        value: "deepseek-v3.1:671b"
+      - key: DISABLE_WHATSAPP
+        value: "true"
       - key: SESSION_SECRET
         value: "${SESSION_SECRET}"
         type: SECRET
     run_command: node server.js
     health_check:
       http_path: /health
-      initial_delay_seconds: 30
-      period_seconds: 10
+      initial_delay_seconds: 10
+      period_seconds: 30
