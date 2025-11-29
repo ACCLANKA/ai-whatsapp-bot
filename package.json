@@ -1,19 +1,29 @@
 {
-  "name": "wa-bot-gigies",
+  "name": "ai-whatsapp-bot",
   "version": "1.0.0",
-  "description": "WhatsApp Auto-Reply Bot for KCC Lanka",
+  "description": "AI-powered WhatsApp bot with e-commerce and admin features",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build": "echo 'No build required'"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "keywords": [
     "whatsapp",
     "bot",
-    "auto-reply"
+    "ai",
+    "ecommerce",
+    "ollama"
   ],
-  "author": "KCC Lanka",
+  "author": "ACCLANKA",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ACCLANKA/ai-whatsapp-bot.git"
+  },
   "dependencies": {
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",

@@ -1,0 +1,33 @@
+name: ai-whatsapp-bot
+region: sgp
+services:
+  - name: whatsapp-bot
+    github:
+      repo: ACCLANKA/ai-whatsapp-bot
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: professional-xs
+    http_port: 3011
+    routes:
+      - path: /
+    envs:
+      - key: PORT
+        value: "3011"
+      - key: NODE_ENV
+        value: "production"
+      - key: OLLAMA_HOST
+        value: "http://localhost:11434"
+        type: SECRET
+      - key: OLLAMA_MODEL
+        value: "deepseek-v3.1:671b"
+      - key: SESSION_SECRET
+        value: "${SESSION_SECRET}"
+        type: SECRET
+    run_command: node server.js
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
+      period_seconds: 10
