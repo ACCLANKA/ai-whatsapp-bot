@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test Product Button</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f5f5f5;
+    }
+    .test-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .success { color: #10b981; }
+    .error { color: #ef4444; }
+    button {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 0.5rem;
+    }
+    button:hover {
+      background: #059669;
+    }
+    #console {
+      background: #1e293b;
+      color: #f1f5f9;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Product Button Test</h1>
+  
+  <div class="test-section">
+    <h2>Test 1: Function Availability</h2>
+    <button onclick="testFunctionExists()">Check if showAddProductModal exists</button>
+    <p id="test1Result"></p>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 2: Call Function Directly</h2>
+    <button onclick="testCallFunction()">Call showAddProductModal()</button>
+    <p id="test2Result"></p>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 3: Modal Element Check</h2>
+    <button onclick="testModalExists()">Check if productModal element exists</button>
+    <p id="test3Result"></p>
+  </div>
+
+  <div class="test-section">
+    <h2>Console Log:</h2>
+    <div id="console"></div>
+  </div>
+
+  <script>
+    // Redirect console.log to our display
+    const consoleDiv = document.getElementById('console');
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      consoleDiv.textContent += args.join(' ') + '\n';
+      consoleDiv.scrollTop = consoleDiv.scrollHeight;
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      consoleDiv.textContent += '❌ ERROR: ' + args.join(' ') + '\n';
+      consoleDiv.scrollTop = consoleDiv.scrollHeight;
+    };
+
+    console.log('=== Test Page Loaded ===');
+    console.log('Time: ' + new Date().toLocaleTimeString());
+
+    function testFunctionExists() {
+      const result = document.getElementById('test1Result');
+      
+      if (typeof window.showAddProductModal === 'function') {
+        result.innerHTML = '<span class="success">✅ SUCCESS: showAddProductModal function exists!</span>';
+        console.log('✅ Function found: ' + window.showAddProductModal);
+      } else {
+        result.innerHTML = '<span class="error">❌ FAIL: showAddProductModal is not defined!</span>';
+        console.error('Function not found');
+        console.log('window.showAddProductModal =', window.showAddProductModal);
+      }
+    }
+
+    function testCallFunction() {
+      const result = document.getElementById('test2Result');
+      
+      try {
+        console.log('Attempting to call showAddProductModal()...');
+        
+        if (typeof window.showAddProductModal === 'function') {
+          window.showAddProductModal();
+          result.innerHTML = '<span class="success">✅ Function called without error!</span>';
+          console.log('✅ Function executed successfully');
+        } else {
+          result.innerHTML = '<span class="error">❌ Function does not exist!</span>';
+          console.error('Cannot call - function not defined');
+        }
+        
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ ERROR: ' + error.message + '</span>';
+        console.error('Error calling function:', error);
+      }
+    }
+
+    function testModalExists() {
+      const result = document.getElementById('test3Result');
+      const modal = document.getElementById('productModal');
+      
+      if (modal) {
+        result.innerHTML = '<span class="success">✅ SUCCESS: productModal element found!</span>';
+        console.log('✅ Modal element exists');
+        console.log('Modal display:', modal.style.display);
+        console.log('Modal HTML:', modal.outerHTML.substring(0, 200) + '...');
+      } else {
+        result.innerHTML = '<span class="error">❌ FAIL: productModal element not found!</span>';
+        console.error('Modal element missing from page');
+      }
+    }
+
+    // Auto-run tests on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('\n=== Auto-running Tests ===\n');
+      setTimeout(() => {
+        testFunctionExists();
+        testModalExists();
+      }, 500);
+    });
+  </script>
+</body>
+</html>

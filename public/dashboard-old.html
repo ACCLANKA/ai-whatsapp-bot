@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Gigies Dashboard - WhatsApp Bot</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #8b5cf6;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --dark: #1e293b;
+      --light: #f8fafc;
+      --gray: #64748b;
+      --border: #e2e8f0;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-text h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .logo-text p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .header-btn {
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .status-badge {
+      background: var(--success);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Stats */
+    .stats-section {
+      padding: 32px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      background: linear-gradient(to bottom, var(--light), white);
+    }
+
+    .stat-card {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px var(--shadow);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px var(--shadow);
+      border-color: var(--primary);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .stat-icon.primary { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .stat-icon.success { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .stat-icon.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--gray);
+      font-weight: 500;
+    }
+
+    /* Tabs */
+    .tabs-section {
+      padding: 0 32px;
+    }
+
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--border);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      padding: 16px 24px;
+      background: none;
+      border: none;
+      color: var(--gray);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-content {
+      padding: 32px 0;
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Table Styles */
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 20px;
+      background: var(--light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--light);
+      color: var(--dark);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--light);
+    }
+
+    th {
+      padding: 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--dark);
+    }
+
+    tbody tr:hover {
+      background: var(--light);
+    }
+
+    /* Bot Settings */
+    .bot-settings {
+      padding: 32px;
+      background: linear-gradient(to top, var(--light), white);
+      border-top: 2px solid var(--border);
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .settings-card {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px var(--shadow);
+    }
+
+    .settings-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    .switch {
+      position: relative;
+      width: 48px;
+      height: 24px;
+      background: var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .switch.active {
+      background: var(--success);
+    }
+
+    .switch-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .switch.active .switch-slider {
+      transform: translateX(24px);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+      font-family: inherit;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 32px;
+      border-radius: 20px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--light);
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .empty-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .empty-text {
+      font-size: 14px;
+      color: var(--gray);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--gray);
+    }
+
+    /* Product/Category Cards */
+    .product-card, .category-card {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .product-card:hover, .category-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 20px var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      
+      .header {
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .stats-section {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+
+      .tabs-section {
+        padding: 0 16px;
+      }
+
+      .tab-content {
+        padding: 16px 0;
+      }
+
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bot-settings {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-area">
+        <div class="logo-icon">🛍️</div>
+        <div class="logo-text">
+          <h1>Gigies (Pvt) Ltd</h1>
+          <p>WhatsApp Bot Dashboard</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn" onclick="switchToTab('products')">🛍️ Products</button>
+        <button class="header-btn" onclick="switchToTab('categories')">📂 Categories</button>
+        <button class="header-btn" onclick="switchToTab('orders')">📦 Orders</button>
+        <div class="status-badge" id="connectionStatus">
+          <span class="status-dot"></span>
+          <span id="statusText">Connecting...</span>
+        </div>
+        <button class="header-btn" onclick="logout()" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.3);">🚪 Logout</button>
+      </div>
+    </div>
+
+    <!-- QR Code Section (Hidden by default) -->
+    <div id="qrSection" style="display: none; padding: 32px; text-align: center; background: var(--light);">
+      <h2 style="margin-bottom: 16px;">📱 Scan QR Code</h2>
+      <p style="color: var(--gray); margin-bottom: 24px;">Open WhatsApp on your phone and scan this code to connect</p>
+      <img id="qrCode" src="" alt="QR Code" style="max-width: 300px; border-radius: 12px; box-shadow: 0 4px 20px var(--shadow);">
+    </div>
+
+    <!-- Statistics -->
+    
+    <!-- QR Code Section -->
+    <section id="qrSection" class="section qr-section" style="display: none;">
+      <div class="section-header">
+        <h2>📱 Scan QR Code</h2>
+        <p>Open WhatsApp on your phone and scan this code to connect</p>
+      </div>
+      <div class="qr-container">
+        <img id="qrCode" src="" alt="QR Code" class="qr-image">
+        <div class="qr-instructions">
+          <h3>How to connect:</h3>
+          <ol>
+            <li>Open WhatsApp on your phone</li>
+            <li>Tap <strong>Menu</strong> or <strong>Settings</strong></li>
+            <li>Tap <strong>Linked Devices</strong></li>
+            <li>Tap <strong>Link a Device</strong></li>
+            <li>Point your phone at this screen to scan the code</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Connected Section -->
+    <section id="connectedSection" class="section" style="display: none;">
+      <div class="connected-card">
+        <div class="connected-icon">✅</div>
+        <h2>Connected Successfully!</h2>
+        <p id="connectedInfo">Connected as: <strong></strong></p>
+        <button onclick="disconnectBot()" class="btn btn-danger">Disconnect</button>
+      </div>
+    </section>
+
+    <!-- Stats Dashboard -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📨</div>
+        <div class="stat-info">
+          <h3 id="totalMessages">0</h3>
+          <p>Total Messages</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🤖</div>
+        <div class="stat-info">
+          <h3 id="autoRepliesCount">0</h3>
+          <p>Auto-Replies</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+          <h3 id="activeReplies">0</h3>
+          <p>Active</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💬</div>
+        <div class="stat-info">
+          <h3 id="todayMessages">0</h3>
+          <p>Today</p>
+        </div>
+      </div>
+    </stats>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="auto-replies">
+        <span class="tab-icon">🤖</span>
+        <span class="tab-label">Auto-Replies</span>
+      </button>
+      <button class="tab-btn" data-tab="messages">
+        <span class="tab-icon">💬</span>
+        <span class="tab-label">Messages</span>
+      </button>
+      <button class="tab-btn" data-tab="send">
+        <span class="tab-icon">📤</span>
+        <span class="tab-label">Send Message</span>
+      </button>
+      <button class="tab-btn" data-tab="products">
+        <span class="tab-icon">🛍️</span>
+        <span class="tab-label">Products</span>
+      </button>
+      <button class="tab-btn" data-tab="categories">
+        <span class="tab-icon">📂</span>
+        <span class="tab-label">Categories</span>
+      </button>
+      <button class="tab-btn" data-tab="orders">
+        <span class="tab-icon">📦</span>
+        <span class="tab-label">Orders</span>
+      </button>
+      <button class="tab-btn" data-tab="store-settings">
+        <span class="tab-icon">⚙️</span>
+        <span class="tab-label">Store Settings</span>
+      </button>
+    </div>
+
+    <!-- Auto-Replies Tab -->
+    <section id="auto-replies-tab" class="tab-content active">
+      <div class="section-header">
+        <h2>Auto-Reply Keywords</h2>
+        <button onclick="showAddReplyModal()" class="btn btn-primary">➕ Add New</button>
+      </div>
+
+      <div class="replies-list" id="repliesList">
+        <div class="loading">Loading...</div>
+      </div>
+      <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+        <button onclick="loadMoreReplies()" class="load-more-btn">📋 Load More</button>
+      </div>
+    </section>
+
+    <!-- Messages Tab -->
+    <section id="messages-tab" class="tab-content">
+      <div class="section-header">
+        <h2>Messages History</h2>
+        <button onclick="loadMessages()" class="btn btn-secondary">🔄 Refresh</button>
+      </div>
+
+      <div class="messages-list" id="messagesList">
+        <div class="loading">Loading...</div>
+      </div>
+    </section>
+
+    <!-- Send Message Tab -->
+    <section id="send-tab" class="tab-content">
+      <div class="section-header">
+        <h2>Send Message</h2>
+      </div>
+
+      <div class="send-form">
+        <div class="form-group">
+          <label for="sendNumber">Recipient Number</label>
+          <input 
+            type="tel" 
+            id="sendNumber" 
+            placeholder="94771234567 or 0771234567"
+            class="form-input"
+          >
+          <small>Enter number with country code (94) or without</small>
+        </div>
+
+        <div class="form-group">
+          <label for="sendMessage">Message</label>
+          <textarea 
+            id="sendMessage" 
+            rows="5" 
+            placeholder="Type your message here..."
+            class="form-textarea"
+          ></textarea>
+        </div>
+
+        <button onclick="sendMessage()" class="btn btn-primary">📤 Send Message</button>
+      </div>
+    </section>
+
+    <!-- Products Tab -->
+    <section id="products-tab" class="tab-content">
+      <div class="section-header">
+        <h2>🛍️ Product Management</h2>
+        <a href="product-add.html" class="btn btn-primary">➕ Add Product</a>
+      </div>
+
+      <div class="products-list" id="productsList">
+        <div class="loading">Loading products...</div>
+      </div>
+    </section>
+
+    <!-- Categories Tab -->
+    <section id="categories-tab" class="tab-content">
+      <div class="section-header">
+        <h2>📂 Category Management</h2>
+        <button onclick="showAddCategoryModal()" class="btn btn-primary">➕ Add Category</button>
+      </div>
+
+      <div class="categories-list" id="categoriesList">
+        <div class="loading">Loading categories...</div>
+      </div>
+    </section>
+
+    <!-- Orders Tab -->
+    <section id="orders-tab" class="tab-content">
+      <div class="section-header">
+        <h2>📦 Order Management</h2>
+        <button onclick="loadOrders()" class="btn btn-secondary">🔄 Refresh</button>
+      </div>
+
+      <div class="orders-list" id="ordersList">
+        <div class="loading">Loading orders...</div>
+      </div>
+    </section>
+
+    <!-- Store Settings Tab -->
+    <section id="store-settings-tab" class="tab-content">
+      <div class="section-header">
+        <h2>⚙️ Store Configuration</h2>
+        <p>Manage your store settings and delivery options</p>
+      </div>
+
+      <div class="store-settings-form">
+        <div class="form-group">
+          <label>Store Name</label>
+          <input type="text" id="storeName" class="form-input" placeholder="My Store">
+        </div>
+
+        <div class="form-group">
+          <label>Welcome Message</label>
+          <textarea id="welcomeMessage" rows="3" class="form-textarea" placeholder="Welcome to our store!"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Business Hours</label>
+          <input type="text" id="businessHours" class="form-input" placeholder="9:00 AM - 6:00 PM">
+        </div>
+
+        <div class="form-group">
+          <label>Delivery Fee (Rs.)</label>
+          <input type="number" id="deliveryFee" class="form-input" placeholder="500">
+        </div>
+
+        <div class="form-group">
+          <label>Free Delivery Above (Rs.)</label>
+          <input type="number" id="freeDeliveryAbove" class="form-input" placeholder="10000">
+        </div>
+
+        <div class="form-group">
+          <label>Payment Methods</label>
+          <input type="text" id="paymentMethods" class="form-input" placeholder="Cash on Delivery, Bank Transfer">
+        </div>
+
+        <div class="form-group">
+          <label>Delivery Areas</label>
+          <input type="text" id="deliveryAreas" class="form-input" placeholder="Colombo, Kandy, Galle">
+        </div>
+
+        <button onclick="saveStoreSettings()" class="btn btn-primary">💾 Save Settings</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Settings Section (Always Visible at Bottom) -->
+  <div class="container" style="margin-top: 2rem;">
+    <section class="section settings-section">
+      <div class="section-header">
+        <h2>⚙️ Bot Settings</h2>
+        <p>Configure auto-replies and AI behavior</p>
+      </div>
+
+      <div class="settings-form">
+        <div class="form-group">
+          <label class="toggle-label">
+            <input type="checkbox" id="autoReplyToggle" onchange="toggleAutoReply()">
+            <span>Enable Auto-Replies</span>
+          </label>
+          <small>When enabled, bot will automatically respond to messages</small>
+        </div>
+
+        <div class="form-group">
+          <label class="toggle-label">
+            <input type="checkbox" id="aiModeToggle" onchange="toggleAIMode()">
+            <span>🤖 Enable AI Mode (Ollama)</span>
+          </label>
+          <small>Use AI for intelligent, context-aware responses instead of keywords</small>
+          <button onclick="testAI()" class="btn btn-secondary" style="margin-top: 0.5rem;">🧪 Test AI Connection</button>
+        </div>
+
+        <div class="form-group">
+          <label class="toggle-label">
+            <input type="checkbox" id="aiFallbackToggle" onchange="toggleAIFallback()">
+            <span>Enable AI Fallback</span>
+          </label>
+          <small>Fall back to keyword replies if AI fails</small>
+        </div>
+
+        <div class="form-group">
+          <label for="aiModel">🎯 Select AI Model (Ollama Cloud)</label>
+          <select id="aiModel" class="form-input" onchange="changeAIModel()">
+            <option value="">Loading models...</option>
+          </select>
+          <small>Choose from available Ollama Cloud models (no local storage needed)</small>
+          <button onclick="loadModels()" class="btn btn-secondary" style="margin-top: 0.5rem;">🔄 Refresh Models</button>
+        </div>
+
+        <div class="form-group">
+          <label for="aiSystemPrompt">📋 AI Business Information & Instructions</label>
+          <textarea 
+            id="aiSystemPrompt" 
+            rows="15" 
+            placeholder="Enter your business information, services, and AI instructions..."
+            class="form-textarea"
+            style="font-family: monospace; font-size: 0.9rem;"
+          ></textarea>
+          <small>This is what the AI knows about your business. Include services, hours, contact info, etc. The AI will use this to answer customer questions.</small>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+            <button onclick="saveAISystemPrompt()" class="btn btn-primary">💾 Save Business Info</button>
+            <button onclick="resetAISystemPrompt()" class="btn btn-secondary">🔄 Reset to Default</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="aiConversationHistory">💬 Conversation History Length</label>
+          <input 
+            type="number" 
+            id="aiConversationHistory" 
+            min="1" 
+            max="50" 
+            value="10"
+            class="form-input"
+            style="width: 100px;"
+          >
+          <small>Number of previous messages to send to AI for context (1-50). Higher = better context but slower. Current: 10 messages per person.</small>
+          <button onclick="saveConversationHistory()" class="btn btn-secondary" style="margin-top: 0.5rem;">💾 Save</button>
+        </div>
+
+        <div class="form-group">
+          <label for="welcomeMessage">Welcome Message</label>
+          <textarea 
+            id="welcomeMessage" 
+            rows="3" 
+            placeholder="Welcome message for new chats"
+            class="form-textarea"
+          ></textarea>
+          <button onclick="saveWelcomeMessage()" class="btn btn-secondary">💾 Save</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Add/Edit Reply Modal -->
+  <div id="replyModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add Auto-Reply</h2>
+        <button class="close-btn" onclick="closeReplyModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="keyword">Keyword</label>
+          <input 
+            type="text" 
+            id="keyword" 
+            placeholder="e.g., hello, price, hours"
+            class="form-input"
+          >
+          <small>Keyword to trigger auto-reply (case-insensitive)</small>
+        </div>
+
+        <div class="form-group">
+          <label for="response">Response</label>
+          <textarea 
+            id="response" 
+            rows="5" 
+            placeholder="Your auto-reply message..."
+            class="form-textarea"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button onclick="closeReplyModal()" class="btn btn-secondary">Cancel</button>
+        <button onclick="saveReply()" class="btn btn-primary">💾 Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Product Modal -->
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="productModalTitle">Add Product</h2>
+        <button class="close-btn" onclick="closeProductModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="productId">
+        
+        <div class="form-group">
+          <label for="productCategory">Category *</label>
+          <select id="productCategory" class="form-input" required>
+            <option value="">Select Category</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="productName">Product Name *</label>
+          <input type="text" id="productName" class="form-input" placeholder="Rose Perfume" required>
+        </div>
+
+        <div class="form-group">
+          <label for="productDescription">Description</label>
+          <textarea id="productDescription" rows="3" class="form-textarea" placeholder="Product description..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="productPrice">Price (Rs.) *</label>
+          <input type="number" id="productPrice" class="form-input" placeholder="2500" min="0" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+          <label for="productStock">Stock Quantity *</label>
+          <input type="number" id="productStock" class="form-input" placeholder="100" min="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="productImage">Image URL</label>
+          <input type="url" id="productImage" class="form-input" placeholder="https://example.com/image.jpg">
+        </div>
+
+        <div class="form-group">
+          <label for="productStatus">Status</label>
+          <select id="productStatus" class="form-input">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button onclick="closeProductModal()" class="btn btn-secondary">Cancel</button>
+        <button onclick="saveProduct()" class="btn btn-primary">💾 Save Product</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Category Modal -->
+  <div id="categoryModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="categoryModalTitle">Add Category</h2>
+        <button class="close-btn" onclick="closeCategoryModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="categoryId">
+        
+        <div class="form-group">
+          <label for="categoryName">Category Name *</label>
+          <input type="text" id="categoryName" class="form-input" placeholder="Perfumes" required>
+        </div>
+
+        <div class="form-group">
+          <label for="categoryDescription">Description</label>
+          <textarea id="categoryDescription" rows="2" class="form-textarea" placeholder="Category description..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="categoryIcon">Icon (Emoji)</label>
+          <input type="text" id="categoryIcon" class="form-input" placeholder="🧴" maxlength="2">
+        </div>
+
+        <div class="form-group">
+          <label for="categorySortOrder">Sort Order</label>
+          <input type="number" id="categorySortOrder" class="form-input" placeholder="0" min="0">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button onclick="closeCategoryModal()" class="btn btn-secondary">Cancel</button>
+        <button onclick="saveCategory()" class="btn btn-primary">💾 Save Category</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+  <script src="js/app.js?v=1761572985"></script>
+  <script src="js/ecommerce.js?v=1761573501"></script>
+</body>
+</html>

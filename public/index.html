@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>WhatsApp Bot Manager - KCC Lanka</title>
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <span class="logo-icon">💬</span>
+          <h1>WhatsApp Bot Manager - AI Business Editor</h1>
+        </div>
+        <div class="status-badge" id="connectionStatus">
+          <span class="status-dot"></span>
+          <span class="status-text">Connecting...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    
+    <!-- QR Code Section -->
+    <section id="qrSection" class="section qr-section" style="display: none;">
+      <div class="section-header">
+        <h2>📱 Scan QR Code</h2>
+        <p>Open WhatsApp on your phone and scan this code to connect</p>
+      </div>
+      <div class="qr-container">
+        <img id="qrCode" src="" alt="QR Code" class="qr-image">
+        <div class="qr-instructions">
+          <h3>How to connect:</h3>
+          <ol>
+            <li>Open WhatsApp on your phone</li>
+            <li>Tap <strong>Menu</strong> or <strong>Settings</strong></li>
+            <li>Tap <strong>Linked Devices</strong></li>
+            <li>Tap <strong>Link a Device</strong></li>
+            <li>Point your phone at this screen to scan the code</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Connected Section -->
+    <section id="connectedSection" class="section" style="display: none;">
+      <div class="connected-card">
+        <div class="connected-icon">✅</div>
+        <h2>Connected Successfully!</h2>
+        <p id="connectedInfo">Connected as: <strong></strong></p>
+        <button onclick="disconnectBot()" class="btn btn-danger">Disconnect</button>
+      </div>
+    </section>
+
+    <!-- Stats Dashboard -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📨</div>
+        <div class="stat-info">
+          <h3 id="totalMessages">0</h3>
+          <p>Total Messages</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🤖</div>
+        <div class="stat-info">
+          <h3 id="autoRepliesCount">0</h3>
+          <p>Auto-Replies</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+          <h3 id="activeReplies">0</h3>
+          <p>Active</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💬</div>
+        <div class="stat-info">
+          <h3 id="todayMessages">0</h3>
+          <p>Today</p>
+        </div>
+      </div>
+    </stats>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="auto-replies">🤖 Auto-Replies</button>
+      <button class="tab-btn" data-tab="messages">💬 Messages</button>
+      <button class="tab-btn" data-tab="send">📤 Send Message</button>
+    </div>
+
+    <!-- Auto-Replies Tab -->
+    <section id="auto-replies-tab" class="tab-content active">
+      <div class="section-header">
+        <h2>Auto-Reply Keywords</h2>
+        <button onclick="showAddReplyModal()" class="btn btn-primary">➕ Add New</button>
+      </div>
+
+      <div class="replies-list" id="repliesList">
+        <div class="loading">Loading...</div>
+      </div>
+    </section>
+
+    <!-- Messages Tab -->
+    <section id="messages-tab" class="tab-content">
+      <div class="section-header">
+        <h2>Messages History</h2>
+        <button onclick="loadMessages()" class="btn btn-secondary">🔄 Refresh</button>
+      </div>
+
+      <div class="messages-list" id="messagesList">
+        <div class="loading">Loading...</div>
+      </div>
+    </section>
+
+    <!-- Send Message Tab -->
+    <section id="send-tab" class="tab-content">
+      <div class="section-header">
+        <h2>Send Message</h2>
+      </div>
+
+      <div class="send-form">
+        <div class="form-group">
+          <label for="sendNumber">Recipient Number</label>
+          <input 
+            type="tel" 
+            id="sendNumber" 
+            placeholder="94771234567 or 0771234567"
+            class="form-input"
+          >
+          <small>Enter number with country code (94) or without</small>
+        </div>
+
+        <div class="form-group">
+          <label for="sendMessage">Message</label>
+          <textarea 
+            id="sendMessage" 
+            rows="5" 
+            placeholder="Type your message here..."
+            class="form-textarea"
+          ></textarea>
+        </div>
+
+        <button onclick="sendMessage()" class="btn btn-primary">📤 Send Message</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Settings Section (Always Visible at Bottom) -->
+  <div class="container" style="margin-top: 2rem;">
+    <section class="section settings-section">
+      <div class="section-header">
+        <h2>⚙️ Bot Settings</h2>
+        <p>Configure auto-replies and AI behavior</p>
+      </div>
+
+      <div class="settings-form">
+        <div class="form-group">
+          <label class="toggle-label">
+            <input type="checkbox" id="autoReplyToggle" onchange="toggleAutoReply()">
+            <span>Enable Auto-Replies</span>
+          </label>
+          <small>When enabled, bot will automatically respond to messages</small>
+        </div>
+
+        <div class="form-group">
+          <label class="toggle-label">
+            <input type="checkbox" id="aiModeToggle" onchange="toggleAIMode()">
+            <span>🤖 Enable AI Mode (Ollama)</span>
+          </label>
+          <small>Use AI for intelligent, context-aware responses instead of keywords</small>
+          <button onclick="testAI()" class="btn btn-secondary" style="margin-top: 0.5rem;">🧪 Test AI Connection</button>
+        </div>
+
+        <div class="form-group">
+          <label class="toggle-label">
+            <input type="checkbox" id="aiFallbackToggle" onchange="toggleAIFallback()">
+            <span>Enable AI Fallback</span>
+          </label>
+          <small>Fall back to keyword replies if AI fails</small>
+        </div>
+
+        <div class="form-group">
+          <label for="aiModel">🎯 Select AI Model (Ollama Cloud)</label>
+          <select id="aiModel" class="form-input" onchange="changeAIModel()">
+            <option value="">Loading models...</option>
+          </select>
+          <small>Choose from available Ollama Cloud models (no local storage needed)</small>
+          <button onclick="loadModels()" class="btn btn-secondary" style="margin-top: 0.5rem;">🔄 Refresh Models</button>
+        </div>
+
+        <div class="form-group">
+          <label for="aiSystemPrompt">📋 AI Business Information & Instructions</label>
+          <textarea 
+            id="aiSystemPrompt" 
+            rows="15" 
+            placeholder="Enter your business information, services, and AI instructions..."
+            class="form-textarea"
+            style="font-family: monospace; font-size: 0.9rem;"
+          ></textarea>
+          <small>This is what the AI knows about your business. Include services, hours, contact info, etc. The AI will use this to answer customer questions.</small>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+            <button onclick="saveAISystemPrompt()" class="btn btn-primary">💾 Save Business Info</button>
+            <button onclick="resetAISystemPrompt()" class="btn btn-secondary">🔄 Reset to Default</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="aiConversationHistory">💬 Conversation History Length</label>
+          <input 
+            type="number" 
+            id="aiConversationHistory" 
+            min="1" 
+            max="50" 
+            value="10"
+            class="form-input"
+            style="width: 100px;"
+          >
+          <small>Number of previous messages to send to AI for context (1-50). Higher = better context but slower. Current: 10 messages per person.</small>
+          <button onclick="saveConversationHistory()" class="btn btn-secondary" style="margin-top: 0.5rem;">💾 Save</button>
+        </div>
+
+        <div class="form-group">
+          <label for="welcomeMessage">Welcome Message</label>
+          <textarea 
+            id="welcomeMessage" 
+            rows="3" 
+            placeholder="Welcome message for new chats"
+            class="form-textarea"
+          ></textarea>
+          <button onclick="saveWelcomeMessage()" class="btn btn-secondary">💾 Save</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Add/Edit Reply Modal -->
+  <div id="replyModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add Auto-Reply</h2>
+        <button class="close-btn" onclick="closeReplyModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="keyword">Keyword</label>
+          <input 
+            type="text" 
+            id="keyword" 
+            placeholder="e.g., hello, price, hours"
+            class="form-input"
+          >
+          <small>Keyword to trigger auto-reply (case-insensitive)</small>
+        </div>
+
+        <div class="form-group">
+          <label for="response">Response</label>
+          <textarea 
+            id="response" 
+            rows="5" 
+            placeholder="Your auto-reply message..."
+            class="form-textarea"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button onclick="closeReplyModal()" class="btn btn-secondary">Cancel</button>
+        <button onclick="saveReply()" class="btn btn-primary">💾 Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+  <script src="js/app.js?v=4.0"></script>
+</body>
+</html>

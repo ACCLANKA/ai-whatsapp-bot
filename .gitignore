@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# WhatsApp session data (contains auth tokens - DO NOT COMMIT)
+wa-session/
+.wwebjs_auth/
+.wwebjs_cache/
+
+# Database (contains user data)
+data/*.db
+data/*.db-journal
+
+# Uploaded files (user content)
+uploads/
+public/uploads/
+
+# Logs
+*.log
+logs/
+message-error.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
+cookies.txt
+
+# Build artifacts
+dist/
+build/
+
+# Debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc junk files created accidentally
+'erver.js > server.log 2>&1 &'
+'s -tlpn | grep :3011'
+'ystemctl start wa-bot-demo.service'
